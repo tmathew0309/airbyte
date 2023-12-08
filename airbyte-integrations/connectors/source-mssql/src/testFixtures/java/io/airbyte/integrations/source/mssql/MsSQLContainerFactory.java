@@ -37,17 +37,18 @@ public class MsSQLContainerFactory implements ContainerFactory<MSSQLServerContai
     // yes, this is uglier than sin. The reason why I'm doing this is because there's no command to
     // reload a SqlServer config. So I need to create all the necessary files before I start the
     // SQL server. Hence this horror
-    String command = StringUtils.replace("""
-        mkdir /tmp/certs/ && 
-        openssl req -nodes -new -x509 -sha256 -keyout /tmp/certs/ca.key -out /tmp/certs/ca.crt -subj "/CN=ca" && 
-        openssl req -nodes -new -x509 -sha256 -keyout /tmp/certs/dummy_ca.key -out /tmp/certs/dummy_ca.crt -subj "/CN=ca" && 
-        openssl req -nodes -new -sha256 -keyout /tmp/certs/server.key -out /tmp/certs/server.csr -subj "/CN={hostName}" && 
-        openssl req -nodes -new -sha256 -keyout /tmp/certs/dummy_server.key -out /tmp/certs/dummy_server.csr -subj "/CN={hostName}" && 
-              
-        openssl x509 -req -in /tmp/certs/server.csr -CA /tmp/certs/ca.crt -CAkey /tmp/certs/ca.key -out /tmp/certs/server.crt -days 365 -sha256 && 
-        openssl x509 -req -in /tmp/certs/dummy_server.csr -CA /tmp/certs/ca.crt -CAkey /tmp/certs/ca.key -out /tmp/certs/dummy_server.crt -days 365 -sha256 && 
-        openssl x509 -req -in /tmp/certs/server.csr -CA /tmp/certs/dummy_ca.crt -CAkey /tmp/certs/dummy_ca.key -out /tmp/certs/server_dummy_ca.crt -days 365 -sha256 && 
-        chmod 440 /tmp/certs/* && 
+    String command = StringUtils.replace(
+        """
+        mkdir /tmp/certs/ &&
+        openssl req -nodes -new -x509 -sha256 -keyout /tmp/certs/ca.key -out /tmp/certs/ca.crt -subj "/CN=ca" &&
+        openssl req -nodes -new -x509 -sha256 -keyout /tmp/certs/dummy_ca.key -out /tmp/certs/dummy_ca.crt -subj "/CN=ca" &&
+        openssl req -nodes -new -sha256 -keyout /tmp/certs/server.key -out /tmp/certs/server.csr -subj "/CN={hostName}" &&
+        openssl req -nodes -new -sha256 -keyout /tmp/certs/dummy_server.key -out /tmp/certs/dummy_server.csr -subj "/CN={hostName}" &&
+
+        openssl x509 -req -in /tmp/certs/server.csr -CA /tmp/certs/ca.crt -CAkey /tmp/certs/ca.key -out /tmp/certs/server.crt -days 365 -sha256 &&
+        openssl x509 -req -in /tmp/certs/dummy_server.csr -CA /tmp/certs/ca.crt -CAkey /tmp/certs/ca.key -out /tmp/certs/dummy_server.crt -days 365 -sha256 &&
+        openssl x509 -req -in /tmp/certs/server.csr -CA /tmp/certs/dummy_ca.crt -CAkey /tmp/certs/dummy_ca.key -out /tmp/certs/server_dummy_ca.crt -days 365 -sha256 &&
+        chmod 440 /tmp/certs/* &&
         {
         cat > /var/opt/mssql/mssql.conf <<- EOF
         [network]
@@ -57,10 +58,10 @@ public class MsSQLContainerFactory implements ContainerFactory<MSSQLServerContai
           forceencryption = 1
         EOF
         } && /opt/mssql/bin/sqlservr
-        """, "{hostName}", container.getHost());
+        """,
+        "{hostName}", container.getHost());
     container.withCommand("bash", "-c", command)
-        .withUrlParam("trustServerCertificate", "true")
-        ;
+        .withUrlParam("trustServerCertificate", "true");
   }
 
 }

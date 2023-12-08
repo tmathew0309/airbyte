@@ -205,19 +205,24 @@ public class MsSQLTestDatabase extends TestDatabase<MSSQLServerContainer<?>, MsS
   }
 
   public static enum CertificateKey {
+
     CA(true),
     DUMMY_CA(false),
     SERVER(true),
     DUMMY_SERVER(false),
     SERVER_DUMMY_CA(false),
     ;
+
     public final boolean isValid;
 
     CertificateKey(boolean isValid) {
       this.isValid = isValid;
     }
+
   }
+
   private Map<CertificateKey, String> cachedCerts;
+
   public synchronized String getCertificate(CertificateKey certificateKey) {
     if (cachedCerts == null) {
       Map<CertificateKey, String> cachedCerts = new HashMap<>();
@@ -272,5 +277,7 @@ public class MsSQLTestDatabase extends TestDatabase<MSSQLServerContainer<?>, MsS
     public MsSQLConfigBuilder withSsl(Map<Object, Object> sslMode) {
       return with("ssl_method", sslMode);
     }
+
   }
+
 }

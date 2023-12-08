@@ -1,16 +1,16 @@
+/*
+ * Copyright (c) 2023 Airbyte, Inc., all rights reserved.
+ */
+
 package io.airbyte.integrations.source.mssql;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import io.airbyte.cdk.db.jdbc.JdbcUtils;
-import io.airbyte.cdk.integrations.util.HostPortResolver;
 import io.airbyte.commons.exceptions.ConnectionErrorException;
 import io.airbyte.integrations.source.mssql.MsSQLTestDatabase.CertificateKey;
-import io.airbyte.integrations.source.mssql.MsSQLTestDatabase.MsSQLConfigBuilder;
 import io.airbyte.protocol.models.v0.AirbyteCatalog;
 import java.net.InetAddress;
 import java.util.Map;
@@ -22,14 +22,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MssqlSslSourceTest {
+
   private MsSQLTestDatabase testDb;
   private static final Logger LOGGER = LoggerFactory.getLogger(MssqlSslSourceTest.class);
 
   @BeforeEach
   void setup() {
-    testDb = MsSQLTestDatabase.in("mcr.microsoft.com/mssql/server:2022-latest"
-        , "withSslCertificates"
-    );
+    testDb = MsSQLTestDatabase.in("mcr.microsoft.com/mssql/server:2022-latest", "withSslCertificates");
   }
 
   @AfterEach
@@ -73,8 +72,9 @@ public class MssqlSslSourceTest {
         AirbyteCatalog catalog = new MssqlSource().discover(config);
         fail("discover should have failed!");
       } catch (ConnectionErrorException e) {
-        String expectedMessage = "Failed to validate the server name \"" + containerIp + "\"in a certificate during Secure Sockets Layer (SSL) initialization.";
-        if (! e.getExceptionMessage().contains(expectedMessage)) {
+        String expectedMessage =
+            "Failed to validate the server name \"" + containerIp + "\"in a certificate during Secure Sockets Layer (SSL) initialization.";
+        if (!e.getExceptionMessage().contains(expectedMessage)) {
           fail("exception message was " + e.getExceptionMessage() + "\n expected: " + expectedMessage);
         }
       }
@@ -99,4 +99,5 @@ public class MssqlSslSourceTest {
       AirbyteCatalog catalog = new MssqlSource().discover(config);
     }
   }
+
 }
