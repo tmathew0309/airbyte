@@ -74,4 +74,4 @@ A breaking change is any change that will require users to take action before th
 ### Limiting the Impact of Breaking Changes
 Some of the changes listed above may not impact all users of the connector. For example, a change to the schema of a specific stream only impacts users who are syncing that stream.
 
-The breaking change metadata allows you to specify narrowed scopes that are specifically affected by a breaking change. If these scopes are defined, Airbyte will only prompt users to take action before upgrading if they are syncing data that is impacted by the breaking change. See the [`breakingChanges` entry](https://docs.airbyte.com/connector-development/connector-metadata-file/) documentation for supported scopes.
+The breaking change metadata allows you to specify narrowed scopes that are specifically affected by a breaking change. See the [`breakingChanges` entry](https://docs.airbyte.com/connector-development/connector-metadata-file/) documentation for supported scopes.
