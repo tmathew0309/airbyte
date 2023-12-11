@@ -1,0 +1,43 @@
+{
+  "documentationUrl": "https://docs.airbyte.com/integrations/destinations/credal",
+  "supported_destination_sync_modes": ["overwrite"],
+  "supportsIncremental": true,
+  "connectionSpecification": {
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Destination Credal",
+    "type": "object",
+    "required": ["deployment_url", "api_token", "uploader_email", "organization_id"],
+    "additionalProperties": true,
+    "properties": {
+      "deployment_url": {
+        "type": "string",
+        "description": "URL of the Credal API deployment that is the destination",
+        "examples": [
+          "https://api.credal.ai"
+        ]
+      },
+      "api_token": {
+        "type": "string",
+        "description": "API token used to send data to a Credal deployment.",
+        "airbyte_secret": true
+      },
+      "uploader_email": {
+        "type": "string",
+        "description": "If not specified, the data will be uploaded to the user of the token owner.",
+      },
+      "organization_id": {
+        "type": "string",
+        "description": "Can only be specified by tokens that have the authority to upload on behalf of other organizations. If not specified, the data will be uploaded to the organization of the token owner."
+      },
+      "text_fields": {
+        "type": "array",
+        "description": "Fields that should be embedded and indexed in vector store."
+      },
+      "metadata_fields": {
+        "type": "array",
+        "description": "Fields that should be added as metadata for each indexed document."
+      }
+    }
+  }
+}
+
