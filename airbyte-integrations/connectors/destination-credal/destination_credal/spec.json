@@ -1,12 +1,12 @@
 {
   "documentationUrl": "https://docs.airbyte.com/integrations/destinations/credal",
-  "supported_destination_sync_modes": ["overwrite"],
+  "supported_destination_sync_modes": ["overwrite", "append_dedup"],
   "supportsIncremental": true,
   "connectionSpecification": {
     "$schema": "http://json-schema.org/draft-07/schema#",
     "title": "Destination Credal",
     "type": "object",
-    "required": ["deployment_url", "api_token", "uploader_email", "organization_id"],
+    "required": ["deployment_url", "api_token", "document_name_field", "document_id_field"],
     "additionalProperties": true,
     "properties": {
       "deployment_url": {
@@ -23,7 +23,7 @@
       },
       "uploader_email": {
         "type": "string",
-        "description": "If not specified, the data will be uploaded to the user of the token owner.",
+        "description": "If not specified, the data will be uploaded to the user of the token owner."
       },
       "organization_id": {
         "type": "string",
@@ -36,6 +36,18 @@
       "metadata_fields": {
         "type": "array",
         "description": "Fields that should be added as metadata for each indexed document."
+      },
+      "document_name_field": {
+        "type": "string",
+        "description": "Fields to use to name the document."
+      },
+      "document_id_field": {
+        "type": "string",
+        "description": "Fields to use for the primary key for this document in the source system."
+      },
+      "document_url_field": {
+        "type": "string",
+        "description": "Link to this document in the source system."
       }
     }
   }

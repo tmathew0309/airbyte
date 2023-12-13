@@ -7,11 +7,14 @@ from typing import Any, Iterable, Mapping, cast
 
 import requests
 from airbyte_cdk import AirbyteLogger
+from logging import Logger, getLogger
 from airbyte_cdk.destinations import Destination
 from airbyte_cdk.models import AirbyteConnectionStatus, AirbyteMessage, ConfiguredAirbyteCatalog, Status, Type
 from destination_credal.config import CredalConfig
 from destination_credal.client import CredalClient
 from destination_credal.writer import CredalWriter
+
+logger = getLogger("airbyte")
 
 
 class DestinationCredal(Destination):
@@ -35,15 +38,16 @@ class DestinationCredal(Destination):
         :return: Iterable of AirbyteStateMessages wrapped in AirbyteMessage structs
         """
         config = cast(CredalConfig, config)
-        writer = CredalWriter(CredalClient(config))
+        writer = CredalWriter(CredalClient(config, logger))
         
         # Process records
         for message in input_messages:
             if message.type == Type.STATE:
                 # Emitting a state message indicates that all records which came before it have been written to the destination.
+                logger.info(f"State message received, checkpointing")
                 yield message
             elif message.type == Type.RECORD and message.record is not None:
-                writer.queue_write_operation(config, message)
+                writer.queue_airbyte_message(config, message.record)
             else:
                 # ignore other message types for now
                 continue

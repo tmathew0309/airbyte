@@ -14,5 +14,7 @@ CredalConfig = TypedDict(
         "document_name_field": str,
         "text_fields": List[str],
         "metadata_fields": Optional[List[str]],
+        "document_id_field": str,
+        "document_url_field": Optional[str],
     },
 )

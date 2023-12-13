@@ -25,11 +25,13 @@ class CredalWriter:
 
     def queue_airbyte_message(self, config: CredalConfig, record: AirbyteRecordMessage) -> None:
         """Write now this just directly writes to Credal. Eventually we will buffer messages before sending."""
-        document_name = record.data[config.document_name_field]
-        text_contents = stringify_dict(self._extract_fields_from_message(record, config.text_fields))
-        custom_metadata = self._extract_fields_from_message(record, config.metadata_fields)
+        document_name = record.data[config["document_name_field"]]
+        document_id = str(record.data[config["document_id_field"]]) # These are sometimes ints so converting to string heres
+        document_url = record.data[config["document_url_field"]]
+        text_contents = stringify_dict(self._extract_fields_from_message(record, config["text_fields"]))
+        custom_metadata = self._extract_fields_from_message(record, config["metadata_fields"])
         source_type = self._extract_source_type_from_stream(record.stream)
-        self.client.write(document_name=document_name, document_contents=text_contents, custom_metadata=custom_metadata, document_type=source_type)
+        self.client.write(document_name=document_name, document_contents=text_contents, custom_metadata=custom_metadata, source_type=source_type, document_id=document_id, document_url=document_url)
 
 
     def _extract_fields_from_message(self, record: AirbyteRecordMessage, fields: Optional[List[str]]) -> Dict[str, Any]:
@@ -41,7 +43,7 @@ class CredalWriter:
                     relevant_fields[field] = values if len(values) > 1 else values[0]
         else:
             relevant_fields = record.data
-        return self._remap_field_names(relevant_fields)
+        return relevant_fields
 
     def _extract_source_type_from_stream(self, stream_name: str) -> Dict[str, Any]:
         stream_source = stream_name.split(STREAM_SEPERATOR)[0]
@@ -49,4 +51,4 @@ class CredalWriter:
             'zendesk': 'Zendesk',
             'salesforce': 'Salesforce',
         }
-        return steam_source_to_source_type.get(stream_source, 'Manual upload')
+        return steam_source_to_source_type.get(stream_source, 'Manual Upload')
