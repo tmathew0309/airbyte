@@ -12,9 +12,12 @@ import dpath.util
 
 
 from destination_credal.client import CredalClient
-
+from logging import getLogger
+import logging
 
 STREAM_SEPERATOR = "__"
+
+logger = getLogger("airbyte")
 
 class CredalWriter:
     """
@@ -28,10 +31,11 @@ class CredalWriter:
         document_name = record.data[config["document_name_field"]]
         document_id = str(record.data[config["document_id_field"]]) # These are sometimes ints so converting to string heres
         document_url = record.data[config["document_url_field"]]
+        source_updated_timestamp = record.data[config["source_updated_timestamp_field"]]
         text_contents = stringify_dict(self._extract_fields_from_message(record, config["text_fields"]))
         custom_metadata = self._extract_fields_from_message(record, config["metadata_fields"])
         source_type = self._extract_source_type_from_stream(record.stream)
-        self.client.write(document_name=document_name, document_contents=text_contents, custom_metadata=custom_metadata, source_type=source_type, document_id=document_id, document_url=document_url)
+        self.client.write(document_name=document_name, document_contents=text_contents, custom_metadata=custom_metadata, source_type=source_type, document_id=document_id, document_url=document_url, source_updated_timestamp=source_updated_timestamp, collection_id=config["collection_id"])
 
 
     def _extract_fields_from_message(self, record: AirbyteRecordMessage, fields: Optional[List[str]]) -> Dict[str, Any]:
@@ -46,6 +50,7 @@ class CredalWriter:
         return relevant_fields
 
     def _extract_source_type_from_stream(self, stream_name: str) -> Dict[str, Any]:
+        logger.info(f"stream_name: {stream_name}")
         stream_source = stream_name.split(STREAM_SEPERATOR)[0]
         steam_source_to_source_type = {
             'zendesk': 'Zendesk',

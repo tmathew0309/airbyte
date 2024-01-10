@@ -47,7 +47,15 @@
       },
       "document_url_field": {
         "type": "string",
-        "description": "Link to this document in the source system."
+        "description": "Field that stores the link to this document in the source system."
+      },
+      "source_updated_timestamp_field": {
+        "type": "string",
+        "description": "Field that represents when this document was updated in the source system. If this is specified and the document has already been uploaded, the document will only be updated if the source_updated_timestamp_field is newer than the last time the document was uploaded."
+      },
+      "collection_id": {
+        "type": "string",
+        "description": "Optional collection id if you want to upload the documents to a specific collection in Credal."
       }
     }
   }

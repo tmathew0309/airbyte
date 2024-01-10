@@ -16,5 +16,7 @@ CredalConfig = TypedDict(
         "metadata_fields": Optional[List[str]],
         "document_id_field": str,
         "document_url_field": Optional[str],
+        "source_updated_timestamp_field": Optional[str],
+        "collection_id": Optional[str],
     },
 )

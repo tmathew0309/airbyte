@@ -2,7 +2,7 @@
 # Copyright (c) 2023 Airbyte, Inc., all rights reserved.
 #
 
-from typing import Any, List, Mapping
+from typing import Any, Optional, Mapping
 from airbyte_cdk import AirbyteLogger
 from tenacity import (
     before_sleep_log,
@@ -34,11 +34,11 @@ class CredalClient:
         wait=wait_exponential(multiplier=1, min=90, max=240),
         before_sleep=before_sleep_log(logger, logging.WARNING),
     )
-    def write(self, document_name: str, document_contents: str, custom_metadata: Mapping[str, Any], source_type: str, document_id: str, document_url: str) -> requests.Response:
+    def write(self, document_name: str, document_contents: str, custom_metadata: Mapping[str, Any], source_type: str, document_id: str, document_url: Optional[str], source_updated_timestamp: Optional[str], collection_id: Optional[str]) -> requests.Response:
         """
         See Credal docs: https://docs.credal.ai/api-reference/document-catalog/upload-document-contents
         """
-        request_body = {"documentName": document_name, "documentContents": document_contents, "customMetadata": custom_metadata, "documentSourceType": source_type, "uploadAsUserEmail": self.uploader_email, "documentExternalId": document_id, "documentExternalUrl": document_url}
+        request_body = {"documentName": document_name, "documentContents": document_contents, "customMetadata": custom_metadata, "documentSourceType": source_type, "uploadAsUserEmail": self.uploader_email, "documentExternalId": document_id, "documentExternalUrl": document_url, "sourceSystemUpdated": source_updated_timestamp, "collectionId": collection_id}
         url = f"{self.deployment_url}/api/v0/catalog/uploadDocumentContents"
         headers = {
             "Accept": "application/json",
