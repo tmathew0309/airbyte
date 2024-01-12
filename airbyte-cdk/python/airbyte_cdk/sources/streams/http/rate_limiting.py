@@ -71,6 +71,7 @@ def user_defined_backoff_handler(
             if exc.response:
                 logger.info(f"Status code: {exc.response.status_code}, Response Content: {exc.response.content}")
             retry_after = exc.backoff
+            import pdb; pdb.set_trace();
             logger.info(f"Retrying. Sleeping for {retry_after} seconds")
             time.sleep(retry_after + 1)  # extra second to cover any fractions of second
 

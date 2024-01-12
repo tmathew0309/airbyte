@@ -575,7 +575,7 @@ class TestConnection(BaseTest):
         if inputs.status == ConnectionTestConfig.Status.Succeed:
             output = await docker_runner.call_check(config=connector_config)
             con_messages = filter_output(output, Type.CONNECTION_STATUS)
-
+            import pdb; pdb.set_trace();
             assert len(con_messages) == 1, "Connection status message should be emitted exactly once"
             assert con_messages[0].connectionStatus.status == Status.SUCCEEDED
         elif inputs.status == ConnectionTestConfig.Status.Failed:
@@ -995,6 +995,7 @@ class TestBasicRead(BaseTest):
         docker_runner: ConnectorRunner,
         detailed_logger,
     ):
+        import pdb; pdb.set_trace();
         output = await docker_runner.call_read(connector_config, configured_catalog)
         records = [message.record for message in filter_output(output, Type.RECORD)]
 
