@@ -38,7 +38,9 @@ class DestinationCredalCustom(Destination):
         :return: Iterable of AirbyteStateMessages wrapped in AirbyteMessage structs
         """
         config = cast(CredalConfig, config)
-        writer = CredalWriter(CredalClient(config, logger))
+        writer = CredalWriter(CredalClient(config, logger, configured_catalog))
+
+        
         
         # Process records
         for message in input_messages:
