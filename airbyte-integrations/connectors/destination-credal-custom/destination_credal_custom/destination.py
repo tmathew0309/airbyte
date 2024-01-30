@@ -5,6 +5,7 @@
 
 from typing import Any, Iterable, Mapping, cast
 
+import uuid
 import requests
 from destination_credal_custom.config import CredalConfig
 from airbyte_cdk import AirbyteLogger
@@ -37,9 +38,11 @@ class DestinationCredalCustom(Destination):
         :param input_messages: The stream of input messages received from the source
         :return: Iterable of AirbyteStateMessages wrapped in AirbyteMessage structs
         """
+        # Generate a unique ID for this sync
+        sync_id = uuid.uuid4()
         config = cast(CredalConfig, config)
-        writer = CredalWriter(CredalClient(config, logger, configured_catalog))
-
+        writer = CredalWriter(CredalClient(config, logger, configured_catalog, sync_id))
+        logger.info(f"Starting sync {sync_id}")
         
         
         # Process records

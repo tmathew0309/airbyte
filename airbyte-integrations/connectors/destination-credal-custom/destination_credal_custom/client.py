@@ -2,6 +2,7 @@
 # Copyright (c) 2023 Airbyte, Inc., all rights reserved.
 #
 
+import uuid
 from typing import Any, Optional, Mapping
 from airbyte_cdk import AirbyteLogger
 from tenacity import (
@@ -27,11 +28,13 @@ logger = getLogger("airbyte")
 class CredalClient:
     streams: Mapping[str, ConfiguredAirbyteStream]
 
-    def __init__(self, config: CredalConfig, logger: AirbyteLogger, catalog: ConfiguredAirbyteCatalog):
+    def __init__(self, config: CredalConfig, logger: AirbyteLogger, catalog: ConfiguredAirbyteCatalog, sync_id: uuid.UUID):
         self.deployment_url = config["deployment_url"]
         self.api_token = config["api_token"]
         self.uploader_email = config["uploader_email"]
         self.organization_id = config["organization_id"]
+        self.sync_id = sync_id
+        self.logger = logger
         self.streams = {stream.stream.name: stream for stream in catalog.streams}
 
     @retry(
@@ -47,11 +50,15 @@ class CredalClient:
         force_update = self._get_force_update(airbyte_stream_name)
         request_body = {"airbyteRecord": airbyte_record, "uploadAsUserEmail": self.uploader_email, "collectionId": collection_id, "airbyteStreamName": airbyte_stream_name, "organizationId": self.organization_id, "forceUpdate": force_update}
         url = f"{self.deployment_url}/api/v0/airbyte/uploadAirbyteRecord"
+        request_id = uuid.uuid4()
         headers = {
             "Accept": "application/json",
             **self._get_auth_headers(),
+            "x-request-id": str(request_id),
+            "x-sync-id": str(self.sync_id),
         }
 
+        logger.info(f"Writing record to Credal. Sync id: {self.sync_id} Request id: {request_id}")
         response = requests.request(method="POST", url=url, headers=headers, json=request_body)
 
         if response.status_code != 200:
